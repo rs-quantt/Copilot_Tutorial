@@ -50,15 +50,25 @@ if (process.env.NODE_ENV === "development") {
   });
 }
 
-// Product Routes
+// Product Search & Stock Status Routes (specific before parameterized)
+app.get("/api/products/search", ProductController.searchProducts);
+app.get("/api/products/low-stock", ProductController.getLowStockProducts);
+app.get("/api/products/out-of-stock", ProductController.getOutOfStockProducts);
+app.get("/api/products/recent", ProductController.getRecentlyAddedProducts);
+app.get(
+  "/api/products/category/:category",
+  ProductController.getProductsByCategory
+);
+app.get(
+  "/api/products/supplier/:supplier",
+  ProductController.getProductsBySupplier
+);
+
+// Product CRUD Routes
 app.get("/api/products", ProductController.getAllProducts);
-
 app.post("/api/products", ProductController.createProduct);
-
 app.get("/api/products/:id", ProductController.getProductById);
-
 app.put("/api/products/:id", ProductController.updateProduct);
-
 app.delete("/api/products/:id", ProductController.deleteProduct);
 
 // Inventory Transaction Routes
@@ -69,12 +79,7 @@ app.get(
 
 app.post("/api/transactions", InventoryTransactionController.createTransaction);
 
-// Supplier Routes
-app.get("/api/suppliers", SupplierController.getAllSuppliers);
-app.post("/api/suppliers", SupplierController.createSupplier);
-app.get("/api/suppliers/:id", SupplierController.getSupplierById);
-app.put("/api/suppliers/:id", SupplierController.updateSupplier);
-app.delete("/api/suppliers/:id", SupplierController.deleteSupplier);
+// Supplier Search & Analytics Routes
 app.get("/api/suppliers/search", SupplierController.searchSuppliers);
 app.get("/api/suppliers/top-rated", SupplierController.getTopRatedSuppliers);
 app.get("/api/suppliers/low-credit", SupplierController.getLowCreditSuppliers);
@@ -86,6 +91,13 @@ app.get(
   "/api/suppliers/payment-terms/:terms",
   SupplierController.getSuppliersByPaymentTerms
 );
+
+// Supplier CRUD & Stats Routes
+app.get("/api/suppliers", SupplierController.getAllSuppliers);
+app.post("/api/suppliers", SupplierController.createSupplier);
+app.get("/api/suppliers/:id", SupplierController.getSupplierById);
+app.put("/api/suppliers/:id", SupplierController.updateSupplier);
+app.delete("/api/suppliers/:id", SupplierController.deleteSupplier);
 app.patch("/api/suppliers/:id/rating", SupplierController.updateSupplierRating);
 app.patch(
   "/api/suppliers/:id/credit-limit",
@@ -101,15 +113,21 @@ app.get(
 );
 app.post("/api/suppliers/:id/reviews", SupplierController.addSupplierReview);
 
-// Category Routes
+// Category Search & Tree Routes
+app.get("/api/categories/search", CategoryController.searchCategories);
+app.get("/api/categories/tree", CategoryController.getCategoryTree);
+app.get("/api/categories/roots", CategoryController.getRootCategories);
+app.get(
+  "/api/categories/level/:level",
+  CategoryController.getCategoriesByLevel
+);
+
+// Category CRUD & Stats Routes
 app.get("/api/categories", CategoryController.getAllCategories);
 app.post("/api/categories", CategoryController.createCategory);
 app.get("/api/categories/:id", CategoryController.getCategoryById);
 app.put("/api/categories/:id", CategoryController.updateCategory);
 app.delete("/api/categories/:id", CategoryController.deleteCategory);
-app.get("/api/categories/search", CategoryController.searchCategories);
-app.get("/api/categories/tree", CategoryController.getCategoryTree);
-app.get("/api/categories/roots", CategoryController.getRootCategories);
 app.get("/api/categories/:id/children", CategoryController.getCategoryChildren);
 app.get("/api/categories/:id/path", CategoryController.getCategoryPath);
 app.patch("/api/categories/:id/move", CategoryController.moveCategory);
@@ -117,10 +135,6 @@ app.patch("/api/categories/reorder", CategoryController.reorderCategories);
 app.get(
   "/api/categories/:id/statistics",
   CategoryController.getCategoryStatistics
-);
-app.get(
-  "/api/categories/level/:level",
-  CategoryController.getCategoriesByLevel
 );
 app.post("/api/categories/bulk", CategoryController.bulkCreateCategories);
 
@@ -140,30 +154,6 @@ app.get(
   DashboardController.getSupplierPerformance
 );
 app.get("/api/dashboard/trends", DashboardController.getTrendAnalysis);
-
-// Product Search Routes
-app.get("/api/products/search", ProductController.searchProducts);
-
-// Stock Status Routes
-app.get("/api/products/low-stock", ProductController.getLowStockProducts);
-app.get("/api/products/out-of-stock", ProductController.getOutOfStockProducts);
-app.get("/api/products/recent", ProductController.getRecentlyAddedProducts);
-app.get(
-  "/api/products/category/:category",
-  ProductController.getProductsByCategory
-);
-app.get(
-  "/api/products/supplier/:supplier",
-  ProductController.getProductsBySupplier
-);
-app.patch(
-  "/api/products/:id/quantity",
-  ProductController.updateProductQuantity
-);
-app.patch(
-  "/api/products/bulk-quantity",
-  ProductController.bulkUpdateQuantities
-);
 
 // Transaction Routes
 app.get("/api/transactions", InventoryTransactionController.getAllTransactions);
