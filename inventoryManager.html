@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inventory Manager</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f7fa;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-align: center;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+
+      .main-content {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e1e8ed;
+      }
+
+      .card h2 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 0.5rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #555;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e1e8ed;
+        border-radius: 5px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+      }
+
+      input[type="text"]:focus,
+      input[type="number"]:focus,
+      select:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-secondary {
+        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+      }
+
+      .btn-danger {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+      }
+
+      .btn-warning {
+        background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+        color: #333;
+      }
+
+      .inventory-display {
+        grid-column: 1 / -1;
+      }
+
+      .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .product-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid #667eea;
+        transition: transform 0.2s ease;
+      }
+
+      .product-card:hover {
+        transform: translateY(-2px);
+      }
+
+      .product-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+      }
+
+      .product-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .product-price {
+        color: #27ae60;
+        font-weight: 600;
+      }
+
+      .product-quantity {
+        color: #e74c3c;
+        font-weight: 600;
+      }
+
+      .low-stock {
+        border-left-color: #e74c3c;
+      }
+
+      .out-of-stock {
+        border-left-color: #95a5a6;
+        opacity: 0.7;
+      }
+
+      .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #667eea;
+      }
+
+      .stat-label {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+      }
+
+      .search-container {
+        margin-bottom: 1rem;
+      }
+
+      .alert {
+        padding: 1rem;
+        border-radius: 5px;
+        margin-bottom: 1rem;
+        font-weight: 500;
+      }
+
+      .alert-success {
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+      }
+
+      .alert-error {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+      }
+
+      @media (max-width: 768px) {
+        .main-content {
+          grid-template-columns: 1fr;
+        }
+
+        .container {
+          padding: 10px;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>📦 Inventory Manager</h1>
+        <p class="subtitle">Manage your products with ease</p>
+      </header>
+
+      <!-- Statistics Dashboard -->
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-number" id="totalProducts">0</div>
+          <div class="stat-label">Total Products</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="totalValue">$0</div>
+          <div class="stat-label">Total Inventory Value</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="lowStockCount">0</div>
+          <div class="stat-label">Low Stock Items</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="outOfStockCount">0</div>
+          <div class="stat-label">Out of Stock</div>
+        </div>
+      </div>
+
+      <div class="main-content">
+        <!-- Add Product Form -->
+        <div class="card">
+          <h2>➕ Add New Product</h2>
+          <div id="addProductAlert"></div>
+          <form id="addProductForm">
+            <div class="form-group">
+              <label for="productName">Product Name:</label>
+              <input type="text" id="productName" name="productName" required />
+            </div>
+            <div class="form-group">
+              <label for="productPrice">Price ($):</label>
+              <input
+                type="number"
+                id="productPrice"
+                name="productPrice"
+                min="0"
+                step="0.01"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="productQuantity">Quantity:</label>
+              <input
+                type="number"
+                id="productQuantity"
+                name="productQuantity"
+                min="0"
+                required
+              />
+            </div>
+            <button type="submit" class="btn">Add Product</button>
+          </form>
+        </div>
+
+        <!-- Product Management -->
+        <div class="card">
+          <h2>🔧 Product Management</h2>
+          <div id="managementAlert"></div>
+
+          <!-- Search Products -->
+          <div class="search-container">
+            <div class="form-group">
+              <label for="searchInput">Search Products:</label>
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Enter product name to search..."
+              />
+            </div>
+          </div>
+
+          <!-- Update Product -->
+          <div class="form-group">
+            <label for="updateSelect">Select Product to Update:</label>
+            <select id="updateSelect">
+              <option value="">-- Select a product --</option>
+            </select>
+          </div>
+
+          <div id="updateForm" style="display: none">
+            <div class="form-group">
+              <label for="updateName">Product Name:</label>
+              <input type="text" id="updateName" />
+            </div>
+            <div class="form-group">
+              <label for="updatePrice">Price ($):</label>
+              <input type="number" id="updatePrice" min="0" step="0.01" />
+            </div>
+            <div class="form-group">
+              <label for="updateQuantity">Quantity:</label>
+              <input type="number" id="updateQuantity" min="0" />
+            </div>
+            <button type="button" class="btn" onclick="updateProduct()">
+              Update Product
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="cancelUpdate()"
+            >
+              Cancel
+            </button>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="form-group" style="margin-top: 1.5rem">
+            <label>Quick Actions:</label>
+            <br />
+            <button
+              type="button"
+              class="btn btn-warning"
+              onclick="showLowStockProducts()"
+            >
+              Show Low Stock
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              onclick="clearInventory()"
+            >
+              Clear All
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="exportInventory()"
+            >
+              Export Data
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inventory Display -->
+      <div class="card inventory-display">
+        <h2>📋 Current Inventory</h2>
+        <div id="inventoryContainer">
+          <p style="text-align: center; color: #666; font-style: italic">
+            No products in inventory. Add some products to get started!
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Include the inventory manager JavaScript -->
+    <script src="inventoryManager.js"></script>
+    <script>
+      // Initialize the inventory manager
+      let inventoryManager;
+
+      // Initialize when page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        try {
+          inventoryManager = new InventoryManager();
+          refreshDisplay();
+          setupEventListeners();
+        } catch (error) {
+          console.error("Error initializing inventory manager:", error);
+          showAlert(
+            "addProductAlert",
+            `Error initializing: ${error.message}`,
+            "error"
+          );
+        }
+      });
+
+      function setupEventListeners() {
+        // Add product form submission
+        document
+          .getElementById("addProductForm")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+            addProduct();
+          });
+
+        // Search functionality
+        document
+          .getElementById("searchInput")
+          .addEventListener("input", function (e) {
+            searchProducts(e.target.value);
+          });
+
+        // Update product selection
+        document
+          .getElementById("updateSelect")
+          .addEventListener("change", function (e) {
+            if (e.target.value) {
+              showUpdateForm(e.target.value);
+            } else {
+              hideUpdateForm();
+            }
+          });
+      }
+
+      function addProduct() {
+        const name = document.getElementById("productName").value.trim();
+        const price = parseFloat(document.getElementById("productPrice").value);
+        const quantity = parseInt(
+          document.getElementById("productQuantity").value
+        );
+
+        try {
+          const product = inventoryManager.addProduct(name, price, quantity);
+          showAlert(
+            "addProductAlert",
+            `Product "${name}" added successfully!`,
+            "success"
+          );
+          document.getElementById("addProductForm").reset();
+          refreshDisplay();
+        } catch (error) {
+          showAlert("addProductAlert", `Error: ${error.message}`, "error");
+        }
+      }
+
+      function refreshDisplay() {
+        updateStats();
+        displayProducts();
+        updateProductSelect();
+      }
+
+      function updateStats() {
+        const products = inventoryManager.getAllProducts();
+        const totalProducts = products.length;
+        const totalValue = inventoryManager.getTotalInventoryValue();
+        const lowStockProducts = inventoryManager.getLowStockProducts(10);
+        const outOfStockProducts = inventoryManager.getOutOfStockProducts();
+
+        document.getElementById("totalProducts").textContent = totalProducts;
+        document.getElementById(
+          "totalValue"
+        ).textContent = `$${totalValue.toFixed(2)}`;
+        document.getElementById("lowStockCount").textContent =
+          lowStockProducts.length;
+        document.getElementById("outOfStockCount").textContent =
+          outOfStockProducts.length;
+      }
+
+      function displayProducts(productsToShow = null) {
+        const container = document.getElementById("inventoryContainer");
+        const products = productsToShow || inventoryManager.getAllProducts();
+
+        if (products.length === 0) {
+          container.innerHTML =
+            '<p style="text-align: center; color: #666; font-style: italic;">No products found.</p>';
+          return;
+        }
+
+        const productsHTML = products
+          .map((product) => {
+            let cardClass = "product-card";
+            if (product.getQuantity() === 0) {
+              cardClass += " out-of-stock";
+            } else if (product.getQuantity() < 10) {
+              cardClass += " low-stock";
+            }
+
+            return `
+                    <div class="${cardClass}">
+                        <div class="product-name">${product.getName()}</div>
+                        <div class="product-details">
+                            <div class="product-price">$${product
+                              .getPrice()
+                              .toFixed(2)}</div>
+                            <div class="product-quantity">Qty: ${product.getQuantity()}</div>
+                        </div>
+                        <div style="font-size: 0.8rem; color: #666; margin-bottom: 1rem;">
+                            ID: ${
+                              product.id
+                            } | Created: ${product.createdAt.toLocaleDateString()}
+                        </div>
+                        <button class="btn btn-danger" onclick="removeProduct('${
+                          product.id
+                        }')">Remove</button>
+                        <button class="btn btn-secondary" onclick="selectForUpdate('${
+                          product.id
+                        }')">Edit</button>
+                    </div>
+                `;
+          })
+          .join("");
+
+        container.innerHTML = `<div class="product-grid">${productsHTML}</div>`;
+      }
+
+      function updateProductSelect() {
+        const select = document.getElementById("updateSelect");
+        const products = inventoryManager.getAllProducts();
+
+        select.innerHTML = '<option value="">-- Select a product --</option>';
+        products.forEach((product) => {
+          const option = document.createElement("option");
+          option.value = product.id;
+          option.textContent = `${product.getName()} - $${product
+            .getPrice()
+            .toFixed(2)} (Qty: ${product.getQuantity()})`;
+          select.appendChild(option);
+        });
+      }
+
+      function showUpdateForm(productId) {
+        const product = inventoryManager.getProductById(productId);
+        if (!product) return;
+
+        document.getElementById("updateName").value = product.getName();
+        document.getElementById("updatePrice").value = product.getPrice();
+        document.getElementById("updateQuantity").value = product.getQuantity();
+        document.getElementById("updateForm").style.display = "block";
+      }
+
+      function hideUpdateForm() {
+        document.getElementById("updateForm").style.display = "none";
+      }
+
+      function updateProduct() {
+        const productId = document.getElementById("updateSelect").value;
+        const name = document.getElementById("updateName").value.trim();
+        const price = parseFloat(document.getElementById("updatePrice").value);
+        const quantity = parseInt(
+          document.getElementById("updateQuantity").value
+        );
+
+        try {
+          inventoryManager.updateProduct(productId, { name, price, quantity });
+          showAlert(
+            "managementAlert",
+            "Product updated successfully!",
+            "success"
+          );
+          hideUpdateForm();
+          document.getElementById("updateSelect").value = "";
+          refreshDisplay();
+        } catch (error) {
+          showAlert("managementAlert", `Error: ${error.message}`, "error");
+        }
+      }
+
+      function cancelUpdate() {
+        hideUpdateForm();
+        document.getElementById("updateSelect").value = "";
+      }
+
+      function removeProduct(productId) {
+        if (confirm("Are you sure you want to remove this product?")) {
+          try {
+            inventoryManager.removeProduct(productId);
+            showAlert(
+              "managementAlert",
+              "Product removed successfully!",
+              "success"
+            );
+            refreshDisplay();
+          } catch (error) {
+            showAlert("managementAlert", `Error: ${error.message}`, "error");
+          }
+        }
+      }
+
+      function selectForUpdate(productId) {
+        document.getElementById("updateSelect").value = productId;
+        showUpdateForm(productId);
+      }
+
+      function searchProducts(searchTerm) {
+        if (!searchTerm.trim()) {
+          displayProducts();
+          return;
+        }
+
+        try {
+          const results = inventoryManager.searchProducts(searchTerm);
+          displayProducts(results);
+        } catch (error) {
+          console.error("Search error:", error);
+          displayProducts([]);
+        }
+      }
+
+      function showLowStockProducts() {
+        const lowStockProducts = inventoryManager.getLowStockProducts(10);
+        displayProducts(lowStockProducts);
+        showAlert(
+          "managementAlert",
+          `Showing ${lowStockProducts.length} low stock products (quantity < 10)`,
+          "success"
+        );
+      }
+
+      function clearInventory() {
+        if (
+          confirm(
+            "Are you sure you want to clear all products? This action cannot be undone."
+          )
+        ) {
+          try {
+            const products = inventoryManager.getAllProducts();
+            products.forEach((product) => {
+              inventoryManager.removeProduct(product.id);
+            });
+            showAlert(
+              "managementAlert",
+              "All products removed successfully!",
+              "success"
+            );
+            refreshDisplay();
+          } catch (error) {
+            showAlert("managementAlert", `Error: ${error.message}`, "error");
+          }
+        }
+      }
+
+      function exportInventory() {
+        try {
+          const products = inventoryManager.getAllProducts();
+          const data = {
+            exportDate: new Date().toISOString(),
+            totalProducts: products.length,
+            totalValue: inventoryManager.getTotalInventoryValue(),
+            products: products.map((p) => ({
+              id: p.id,
+              name: p.getName(),
+              price: p.getPrice(),
+              quantity: p.getQuantity(),
+              createdAt: p.createdAt,
+              updatedAt: p.updatedAt,
+            })),
+          };
+
+          const blob = new Blob([JSON.stringify(data, null, 2)], {
+            type: "application/json",
+          });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `inventory-export-${
+            new Date().toISOString().split("T")[0]
+          }.json`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          showAlert(
+            "managementAlert",
+            "Inventory data exported successfully!",
+            "success"
+          );
+        } catch (error) {
+          showAlert(
+            "managementAlert",
+            `Export error: ${error.message}`,
+            "error"
+          );
+        }
+      }
+
+      function showAlert(containerId, message, type) {
+        const container = document.getElementById(containerId);
+        const alertClass = type === "success" ? "alert-success" : "alert-error";
+        container.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
+
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+          container.innerHTML = "";
+        }, 5000);
+      }
+    </script>
+  </body>
+</html>
