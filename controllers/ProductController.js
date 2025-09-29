@@ -1,4 +1,4 @@
-const { productDAO, inventoryTransactionDAO } = require('../daos');
+const { productDAO, inventoryTransactionDAO } = require("../daos");
 
 /**
  * Product Controller
@@ -22,7 +22,7 @@ class ProductController {
         maxPrice,
         supplier,
         sortBy = "createdAt",
-        sortOrder = "desc"
+        sortOrder = "desc",
       } = req.query;
 
       // Build filters object
@@ -38,7 +38,7 @@ class ProductController {
       const options = {
         limit: parseInt(limit),
         skip: (parseInt(page) - 1) * parseInt(limit),
-        sort: { [sortBy]: sortOrder === 'desc' ? -1 : 1 }
+        sort: { [sortBy]: sortOrder === "desc" ? -1 : 1 },
       };
 
       const result = await productDAO.advancedSearch(filters, options);
@@ -47,16 +47,16 @@ class ProductController {
         success: true,
         data: {
           products: result.documents,
-          pagination: result.pagination
-        }
+          pagination: result.pagination,
+        },
       });
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
       const statusCode = error.statusCode || 500;
       res.status(statusCode).json({
         success: false,
         error: error.message,
-        ...(error.details && { details: error.details })
+        ...(error.details && { details: error.details }),
       });
     }
   }
@@ -73,21 +73,21 @@ class ProductController {
       if (!product) {
         return res.status(404).json({
           success: false,
-          error: "Product not found"
+          error: "Product not found",
         });
       }
 
       res.json({
         success: true,
-        data: product
+        data: product,
       });
     } catch (error) {
-      console.error('Error fetching product:', error);
+      console.error("Error fetching product:", error);
       const statusCode = error.statusCode || 500;
       res.status(statusCode).json({
         success: false,
         error: error.message,
-        ...(error.details && { details: error.details })
+        ...(error.details && { details: error.details }),
       });
     }
   }
@@ -117,15 +117,15 @@ class ProductController {
       res.status(201).json({
         success: true,
         data: product,
-        message: "Product created successfully"
+        message: "Product created successfully",
       });
     } catch (error) {
-      console.error('Error creating product:', error);
+      console.error("Error creating product:", error);
       const statusCode = error.statusCode || 500;
       res.status(statusCode).json({
         success: false,
         error: error.message,
-        ...(error.details && { details: error.details })
+        ...(error.details && { details: error.details }),
       });
     }
   }
@@ -138,11 +138,11 @@ class ProductController {
     try {
       const { id } = req.params;
       const existingProduct = await productDAO.findById(id);
-      
+
       if (!existingProduct) {
         return res.status(404).json({
           success: false,
-          error: "Product not found"
+          error: "Product not found",
         });
       }
 
@@ -165,15 +165,15 @@ class ProductController {
       res.json({
         success: true,
         data: updatedProduct,
-        message: "Product updated successfully"
+        message: "Product updated successfully",
       });
     } catch (error) {
-      console.error('Error updating product:', error);
+      console.error("Error updating product:", error);
       const statusCode = error.statusCode || 500;
       res.status(statusCode).json({
         success: false,
         error: error.message,
-        ...(error.details && { details: error.details })
+        ...(error.details && { details: error.details }),
       });
     }
   }
@@ -186,11 +186,11 @@ class ProductController {
     try {
       const { id } = req.params;
       const product = await productDAO.findById(id);
-      
+
       if (!product) {
         return res.status(404).json({
           success: false,
-          error: "Product not found"
+          error: "Product not found",
         });
       }
 
@@ -199,15 +199,15 @@ class ProductController {
 
       res.json({
         success: true,
-        message: "Product deleted successfully"
+        message: "Product deleted successfully",
       });
     } catch (error) {
-      console.error('Error deleting product:', error);
+      console.error("Error deleting product:", error);
       const statusCode = error.statusCode || 500;
       res.status(statusCode).json({
         success: false,
         error: error.message,
-        ...(error.details && { details: error.details })
+        ...(error.details && { details: error.details }),
       });
     }
   }
@@ -219,35 +219,35 @@ class ProductController {
   async searchProducts(req, res) {
     try {
       const { q, limit = 10, page = 1 } = req.query;
-      
+
       if (!q) {
         return res.status(400).json({
           success: false,
-          error: "Search query is required"
+          error: "Search query is required",
         });
       }
 
       const options = {
         limit: parseInt(limit),
-        skip: (parseInt(page) - 1) * parseInt(limit)
+        skip: (parseInt(page) - 1) * parseInt(limit),
       };
 
       const result = await productDAO.search(q, options);
-      
+
       res.json({
         success: true,
         data: {
           products: result.documents,
-          pagination: result.pagination
-        }
+          pagination: result.pagination,
+        },
       });
     } catch (error) {
-      console.error('Error searching products:', error);
+      console.error("Error searching products:", error);
       const statusCode = error.statusCode || 500;
       res.status(statusCode).json({
         success: false,
         error: error.message,
-        ...(error.details && { details: error.details })
+        ...(error.details && { details: error.details }),
       });
     }
   }
@@ -261,25 +261,25 @@ class ProductController {
       const { limit = 50, page = 1 } = req.query;
       const options = {
         limit: parseInt(limit),
-        skip: (parseInt(page) - 1) * parseInt(limit)
+        skip: (parseInt(page) - 1) * parseInt(limit),
       };
 
       const result = await productDAO.getLowStockProducts(options);
-      
+
       res.json({
         success: true,
         data: {
           products: result.documents,
-          pagination: result.pagination
-        }
+          pagination: result.pagination,
+        },
       });
     } catch (error) {
-      console.error('Error fetching low stock products:', error);
+      console.error("Error fetching low stock products:", error);
       const statusCode = error.statusCode || 500;
       res.status(statusCode).json({
         success: false,
         error: error.message,
-        ...(error.details && { details: error.details })
+        ...(error.details && { details: error.details }),
       });
     }
   }
@@ -293,25 +293,25 @@ class ProductController {
       const { limit = 50, page = 1 } = req.query;
       const options = {
         limit: parseInt(limit),
-        skip: (parseInt(page) - 1) * parseInt(limit)
+        skip: (parseInt(page) - 1) * parseInt(limit),
       };
 
       const result = await productDAO.getOutOfStockProducts(options);
-      
+
       res.json({
         success: true,
         data: {
           products: result.documents,
-          pagination: result.pagination
-        }
+          pagination: result.pagination,
+        },
       });
     } catch (error) {
-      console.error('Error fetching out of stock products:', error);
+      console.error("Error fetching out of stock products:", error);
       const statusCode = error.statusCode || 500;
       res.status(statusCode).json({
         success: false,
         error: error.message,
-        ...(error.details && { details: error.details })
+        ...(error.details && { details: error.details }),
       });
     }
   }
@@ -324,28 +324,28 @@ class ProductController {
     try {
       const { category } = req.params;
       const { limit = 50, page = 1 } = req.query;
-      
+
       const options = {
         limit: parseInt(limit),
-        skip: (parseInt(page) - 1) * parseInt(limit)
+        skip: (parseInt(page) - 1) * parseInt(limit),
       };
 
       const result = await productDAO.getByCategory(category, options);
-      
+
       res.json({
         success: true,
         data: {
           products: result.documents,
-          pagination: result.pagination
-        }
+          pagination: result.pagination,
+        },
       });
     } catch (error) {
-      console.error('Error fetching products by category:', error);
+      console.error("Error fetching products by category:", error);
       const statusCode = error.statusCode || 500;
       res.status(statusCode).json({
         success: false,
         error: error.message,
-        ...(error.details && { details: error.details })
+        ...(error.details && { details: error.details }),
       });
     }
   }
@@ -358,28 +358,28 @@ class ProductController {
     try {
       const { supplier } = req.params;
       const { limit = 50, page = 1 } = req.query;
-      
+
       const options = {
         limit: parseInt(limit),
-        skip: (parseInt(page) - 1) * parseInt(limit)
+        skip: (parseInt(page) - 1) * parseInt(limit),
       };
 
       const result = await productDAO.getBySupplier(supplier, options);
-      
+
       res.json({
         success: true,
         data: {
           products: result.documents,
-          pagination: result.pagination
-        }
+          pagination: result.pagination,
+        },
       });
     } catch (error) {
-      console.error('Error fetching products by supplier:', error);
+      console.error("Error fetching products by supplier:", error);
       const statusCode = error.statusCode || 500;
       res.status(statusCode).json({
         success: false,
         error: error.message,
-        ...(error.details && { details: error.details })
+        ...(error.details && { details: error.details }),
       });
     }
   }
@@ -391,28 +391,28 @@ class ProductController {
   async getRecentlyAddedProducts(req, res) {
     try {
       const { days = 7, limit = 20, page = 1 } = req.query;
-      
+
       const options = {
         limit: parseInt(limit),
-        skip: (parseInt(page) - 1) * parseInt(limit)
+        skip: (parseInt(page) - 1) * parseInt(limit),
       };
 
       const result = await productDAO.getRecentlyAdded(parseInt(days), options);
-      
+
       res.json({
         success: true,
         data: {
           products: result.documents,
-          pagination: result.pagination
-        }
+          pagination: result.pagination,
+        },
       });
     } catch (error) {
-      console.error('Error fetching recently added products:', error);
+      console.error("Error fetching recently added products:", error);
       const statusCode = error.statusCode || 500;
       res.status(statusCode).json({
         success: false,
         error: error.message,
-        ...(error.details && { details: error.details })
+        ...(error.details && { details: error.details }),
       });
     }
   }
@@ -426,27 +426,27 @@ class ProductController {
       const { id } = req.params;
       const { quantity, reason = "Manual adjustment" } = req.body;
 
-      if (typeof quantity !== 'number' || quantity < 0) {
+      if (typeof quantity !== "number" || quantity < 0) {
         return res.status(400).json({
           success: false,
-          error: "Valid quantity is required"
+          error: "Valid quantity is required",
         });
       }
 
       const result = await productDAO.updateQuantity(id, quantity, reason);
-      
+
       res.json({
         success: true,
         data: result,
-        message: "Product quantity updated successfully"
+        message: "Product quantity updated successfully",
       });
     } catch (error) {
-      console.error('Error updating product quantity:', error);
+      console.error("Error updating product quantity:", error);
       const statusCode = error.statusCode || 500;
       res.status(statusCode).json({
         success: false,
         error: error.message,
-        ...(error.details && { details: error.details })
+        ...(error.details && { details: error.details }),
       });
     }
   }
@@ -462,24 +462,24 @@ class ProductController {
       if (!Array.isArray(updates) || updates.length === 0) {
         return res.status(400).json({
           success: false,
-          error: "Updates array is required"
+          error: "Updates array is required",
         });
       }
 
       const result = await productDAO.bulkUpdateQuantities(updates);
-      
+
       res.json({
         success: true,
         data: result,
-        message: "Bulk quantity update completed"
+        message: "Bulk quantity update completed",
       });
     } catch (error) {
-      console.error('Error bulk updating quantities:', error);
+      console.error("Error bulk updating quantities:", error);
       const statusCode = error.statusCode || 500;
       res.status(statusCode).json({
         success: false,
         error: error.message,
-        ...(error.details && { details: error.details })
+        ...(error.details && { details: error.details }),
       });
     }
   }

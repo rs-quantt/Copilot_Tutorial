@@ -5,13 +5,20 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "test:unit": "jest --config jest.unit.config.js",
+    "test:integration": "jest test/controllers.integration.test.js --verbose --forceExit --runInBand",
+    "test:watch": "jest --config jest.unit.config.js --watch",
+    "test:coverage": "jest --config jest.unit.config.js --coverage",
+    "test:status": "node scripts/test-status.js",
+    "test:product": "jest test/unit/ProductController.test.js --verbose --silent",
     "start": "node server.js",
     "dev": "nodemon server.js",
     "seed": "node scripts/seed.js"
   },
   "devDependencies": {
     "jest": "^27.5.1",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.4"
   },
   "keywords": [],
   "author": "",

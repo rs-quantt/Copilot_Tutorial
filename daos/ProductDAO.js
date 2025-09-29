@@ -421,6 +421,104 @@ class ProductDAO extends BaseDAO {
       throw this._handleError(error, "ADVANCED_SEARCH");
     }
   }
+
+  /**
+   * Legacy methods for backward compatibility with existing tests
+   */
+
+  // Alias for create method
+  async createProduct(data) {
+    try {
+      // Auto-generate SKU if not provided
+      if (!data.sku) {
+        const count = await this.collection.countDocuments({});
+        data.sku = `SKU-${String(count + 1).padStart(3, "0")}`;
+      }
+      return await this.create(data);
+    } catch (error) {
+      throw this._handleError(error, "CREATE_PRODUCT");
+    }
+  }
+
+  // Alias for findBySKU method
+  async getProductBySku(sku) {
+    return await this.findBySKU(sku);
+  }
+
+  // Search products method
+  async searchProducts(searchTerm) {
+    try {
+      return await this.search(searchTerm);
+    } catch (error) {
+      throw this._handleError(error, "SEARCH_PRODUCTS");
+    }
+  }
+
+  // Get products by category
+  async getProductsByCategory(categoryId) {
+    try {
+      const cursor = this.collection.find({ categoryId });
+      return await cursor.sort({ name: 1 }).toArray();
+    } catch (error) {
+      throw this._handleError(error, "GET_BY_CATEGORY");
+    }
+  }
+
+  // Update product quantity
+  async updateProductQuantity(productId, quantity) {
+    try {
+      const result = await this.collection.updateOne(
+        { _id: productId },
+        {
+          $set: {
+            quantity,
+            updatedAt: new Date(),
+          },
+        }
+      );
+
+      if (result.matchedCount === 0) {
+        return null;
+      }
+
+      return await this.collection.findOne({ _id: productId });
+    } catch (error) {
+      throw this._handleError(error, "UPDATE_QUANTITY");
+    }
+  }
+
+  // Update product
+  async updateProduct(productId, updateData) {
+    try {
+      const result = await this.collection.updateOne(
+        { _id: productId },
+        {
+          $set: {
+            ...updateData,
+            updatedAt: new Date(),
+          },
+        }
+      );
+
+      if (result.matchedCount === 0) {
+        return null;
+      }
+
+      return await this.collection.findOne({ _id: productId });
+    } catch (error) {
+      throw this._handleError(error, "UPDATE_PRODUCT");
+    }
+  }
+
+  // Delete product
+  async deleteProduct(productId) {
+    try {
+      const result = await this.collection.deleteOne({ _id: productId });
+      return result.deletedCount > 0;
+    } catch (error) {
+      throw this._handleError(error, "DELETE_PRODUCT");
+    }
+  }
 }
 
 module.exports = ProductDAO;
