@@ -3,6 +3,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const connectDB = require("./config/database");
+const { getCorsOptions } = require("./config/cors");
 const {
   ProductController,
   SupplierController,
@@ -16,9 +17,12 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
+// Get CORS configuration based on environment
+const corsOptions = getCorsOptions(process.env.NODE_ENV);
+
 // Middleware
 app.use(helmet()); // Security headers
-app.use(cors()); // Enable CORS
+app.use(cors(corsOptions)); // Enable CORS with environment-specific options
 app.use(morgan("combined")); // Logging
 app.use(express.json({ limit: "10mb" })); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
@@ -31,6 +35,20 @@ app.get("/api/health", (req, res) => {
     environment: process.env.NODE_ENV || "development",
   });
 });
+
+// CORS Debug endpoint (development only)
+if (process.env.NODE_ENV === "development") {
+  app.get("/api/cors-debug", (req, res) => {
+    res.json({
+      origin: req.get("Origin"),
+      method: req.method,
+      headers: req.headers,
+      corsOptions: corsOptions,
+      environment: process.env.NODE_ENV || "development",
+      timestamp: new Date().toISOString(),
+    });
+  });
+}
 
 // Product Routes
 app.get("/api/products", ProductController.getAllProducts);
@@ -198,7 +216,25 @@ app.get(
   InventoryTransactionController.exportTransactions
 );
 
-// Error handling middleware
+// CORS Error handling middleware
+app.use((err, req, res, next) => {
+  if (err.message && err.message.includes("CORS")) {
+    console.error("CORS Error:", err.message);
+    console.error("Origin:", req.get("Origin"));
+    console.error("Method:", req.method);
+    console.error("Headers:", req.headers);
+
+    return res.status(403).json({
+      error: "CORS Policy Violation",
+      message: "This request is not allowed due to CORS policy",
+      origin: req.get("Origin"),
+      method: req.method,
+    });
+  }
+  next(err);
+});
+
+// General error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: "Something went wrong!" });
